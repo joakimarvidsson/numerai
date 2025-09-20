@@ -1,0 +1,87 @@
+data:
+  dataset_version: "v2.1"
+  data_dir: "data"
+  train_filename: "signals_train.parquet"
+  validation_filename: "signals_validation.parquet"
+  live_filename: "signals_live.parquet"
+  split_column: "data_type"
+  train_label: "train"
+  validation_label: "validation"
+  live_label: "live"
+  embargo_days: 60
+  yahoo_price_features: true
+  max_tickers_for_market_data: 500
+  numerai_public_id: null
+  numerai_secret_key: null
+  exchange_suffix_map:
+    NASDAQ: ""
+    NYSE: ""
+    NYSEARCA: ""
+    EUREX: ""
+feature_engineering:
+  feature_prefixes:
+    - "feature_"
+    - "alpha_"
+  include_price_features: true
+  row_statistics:
+    - mean
+    - median
+    - std
+    - min
+    - max
+    - sum
+    - skew
+    - kurt
+    - q25
+    - q75
+    - iqr
+    - nan_count
+  date_group_statistics:
+    enabled: true
+    statistics:
+      - mean
+      - std
+      - min
+      - max
+      - median
+  group_columns:
+    - country
+    - sector
+    - industry
+  interaction:
+    enabled: true
+    top_features: 15
+    operations:
+      - product
+      - ratio
+      - difference
+  target_lags:
+    enabled: true
+    lags:
+      - 61
+      - 126
+      - 252
+  cross_sectional_normalization:
+    enabled: true
+    clip_value: 5.0
+model:
+  name: "alpha_mpc_ensemble"
+  target_column: "target"
+  meta_model_column: "meta_model"
+  random_seed: 42
+  feature_selection:
+    top_k: 250
+  optuna:
+    enabled: true
+    n_trials: 25
+    timeout: 1800
+training:
+  cv:
+    n_splits: 5
+    min_train_windows: 252
+    validation_windows: 63
+    embargo_days: 60
+  turnover_target: 0.25
+  churn_target: 0.60
+  turnover_penalty: 0.15
+  churn_penalty: 0.10
